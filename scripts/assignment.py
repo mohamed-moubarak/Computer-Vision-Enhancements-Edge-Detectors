@@ -117,15 +117,47 @@ def prewitt_edge_detection(filepath):
 
 	cv2.imwrite('..\\results\\prewitt_edge_detection.png',new)
 
+def canny_edge_detection(filepath, t1, t2):
+	img = cv2.imread(filepath, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+	padded_image = cv2.copyMakeBorder(img,2,2,2,2,cv2.BORDER_CONSTANT,value = 0)
+	gaussian = img.copy()
+	canny = img.copy()
+
+	for row in xrange(2,padded_image.shape[0]-2):
+		for column in xrange(2,padded_image.shape[1]-2):
+			kernel = (1 * padded_image[row - 2, column - 2]) + (4 * padded_image[row - 2, column - 1]) + (7 * padded_image[row - 2, column]) + (4 * padded_image[row - 2, column + 1]) + (1 * padded_image[row - 2, column + 2]) + (4 * padded_image[row - 1, column - 2]) + (16 * padded_image[row - 1, column - 1]) + (26 * padded_image[row - 1, column]) + (16 * padded_image[row - 1, column + 1]) + (4 * padded_image[row - 1, column + 2]) + (7 * padded_image[row, column - 2]) + (26 * padded_image[row, column - 1]) + (40 * padded_image[row, column]) + (26 * padded_image[row, column + 1]) + (7 * padded_image[row, column + 2]) + (4 * padded_image[row + 1, column - 2]) + (16 * padded_image[row + 1, column - 1]) + (26 * padded_image[row + 1, column]) + (16 * padded_image[row + 1, column + 1]) + (4 * padded_image[row + 1, column + 2]) + (1 * padded_image[row + 2, column - 2]) + (4 * padded_image[row + 2, column - 1]) + (7 * padded_image[row + 2, column]) + (4 * padded_image[row + 2, column + 1]) + (1 * padded_image[row + 2, column + 2])
+
+			gaussian[row - 2, column - 2] = kernel / 272
+
+	# cv2.imwrite('..\\results\\gaussian_filter.png',gaussian)
+
+	# prewitt_edge_detection('..\\results\\gaussian_filter.png')
+	# canny = cv2.imread('..\\results\\gaussian_filter.png', cv2.CV_LOAD_IMAGE_GRAYSCALE)
+
+	for row in xrange(0,canny.shape[0]):
+		for column in xrange(0,canny.shape[1]):
+			if row == 0 or row == canny.shape[0] - 1 or column == 0 or column == canny.shape[1] - 1 or canny[row, column] < t2:
+				canny[row, column] = 0
+			else:
+				if not (canny[row - 1, column - 1] > 0 or canny[row - 1, column] > 0 or canny[row - 1, column + 1] > 0 or canny[row, column - 1] > 0 or canny[row, column + 1] > 0 or canny[row + 1, column - 1] > 0 or canny[row + 1, column] > 0 or canny[row + 1, column + 1] > 0):
+					canny[row, column] = 0
+				
+
+	
+	cv2.imwrite('..\\results\\canny_edge_detection.png',canny)
+	
+
+
 
 image1 = "..\\images\\image1.png"
 image2 = "..\\images\\image2.png"
 image3 = "..\\images\\image3.png"
 
-# contrast_stretching(image1)
-# histogram_equalization(image1)
-# sobel_edge_detection(image2)
+contrast_stretching(image1)
+histogram_equalization(image1)
+sobel_edge_detection(image2)
 prewitt_edge_detection(image2)
+canny_edge_detection(image2, 150, 75)
 
 # print 'RGB shape: ', img.shape 
 # print 'rows: ', img.shape[0]
